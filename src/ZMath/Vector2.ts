@@ -4,6 +4,9 @@ src/ZMath/Vector2.ts
 Defines a Vector2 class.
  */
 
+/**
+ * A class representing 2dimensional vector
+ * */
 export class Vector2
 {
     public readonly x: number;
