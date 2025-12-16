@@ -69,4 +69,11 @@ export class Vector2
      * */
     static div(vector: Vector2, scalar: number): Vector2
     { return new Vector2(vector.x / scalar, vector.y / scalar); }
+
+    /**
+     * A static method calculating dot product between 2 vectors.
+     * @returns {number}
+     */
+    static dot(v1: Vector2, v2: Vector2): number
+    { return v1.x * v2.x + v1.y * v2.y }
 }
