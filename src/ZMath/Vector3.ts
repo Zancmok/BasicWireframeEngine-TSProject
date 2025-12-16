@@ -38,7 +38,7 @@ export class Vector3
     { return `Vector3(${this.x}, ${this.y}, ${this.z})`; }
 
     /**
-     * A getter returning an absolute value of the Vector2.
+     * A getter returning an absolute value of the Vector3.
      * @returns {number}
      * */
     abs(): number
