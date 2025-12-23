@@ -4,23 +4,19 @@ src/index.ts
 The entry point file of the project.
  */
 
-import { ZMath } from './ZMath';
+import { Vector3 } from "./ZMath";
+import { Camera, Renderer } from "./Renderer";
 
-namespace Wireframe
+/**
+ * The entry point of the project.
+ * @returns {void}
+ * */
+function main(): void
 {
-    import Vector2 = ZMath.Vector2;
+    const cam: Camera = new Camera(Vector3.zero, Vector3.zero, 90);
+    const renderer: Renderer = new Renderer(cam, document.getElementById("canvas") as HTMLCanvasElement);
 
-    /**
-     * The entry point of the project.
-     * @returns {void}
-     * */
-    export function main(): void
-    {
-        let x: Vector2 = new Vector2(1, 2);
-        let y: Vector2 = new Vector2(1, 2);
-
-        console.log(Vector2.mul(Vector2.add(x, y), -12).toString());
-    }
+    renderer.draw();
 }
 
-Wireframe.main();
+main();
