@@ -10,12 +10,12 @@ import { Vector3 } from "../ZMath";
 export class CFrame
 {
     public readonly Position: Vector3;
-    public readonly Orientation: Vector3;
+    public readonly Rotation: Vector3;
 
-    constructor(position: Vector3, orientation: Vector3)
+    constructor(position: Vector3, rotation: Vector3)
     {
         this.Position = position;
-        this.Orientation = orientation;
+        this.Rotation = rotation;
     }
 
     public get X(): number
