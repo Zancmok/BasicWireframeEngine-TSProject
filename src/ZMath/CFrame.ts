@@ -15,7 +15,7 @@ export class CFrame
     constructor(position: Vector3, rotation: Vector3)
     {
         this.Position = position;
-        this.Rotation = rotation;
+        this.Rotation = new Vector3(rotation.x % 360, rotation.y % 360, rotation.z % 360);
     }
 
     public get X(): number

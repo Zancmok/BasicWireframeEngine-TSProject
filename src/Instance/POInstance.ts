@@ -12,15 +12,21 @@ export abstract class POInstance extends Instance
 {
     public Origin: CFrame = new CFrame(Vector3.zero, Vector3.zero);
 
+    public get CFrame(): CFrame
+    { return this.Origin; }
+
+    public set CFrame(cFrame: CFrame)
+    { this.Origin = cFrame; }
+
     public get Position(): Vector3
-    { return this.Origin.Position; }
+    { return this.CFrame.Position; }
 
     public set Position(position: Vector3)
-    { this.Origin = new CFrame(position, this.Rotation); }
+    { this.CFrame = new CFrame(position, this.Rotation); }
 
     public get Rotation(): Vector3
-    { return this.Origin.Rotation; }
+    { return this.CFrame.Rotation; }
 
     public set Rotation(rotation: Vector3)
-    { this.Origin = new CFrame(this.Position, rotation); }
+    { this.CFrame = new CFrame(this.Position, rotation); }
 }

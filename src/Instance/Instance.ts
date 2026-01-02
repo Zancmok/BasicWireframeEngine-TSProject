@@ -10,7 +10,7 @@ export abstract class Instance
     private _parent: Instance | null = null;
     private _children: Instance[] = [];
 
-    protected constructor()
+    public constructor()
     { this.Name = `New${(this.constructor as typeof Instance).name}`; }
 
     public get ClassName(): string
@@ -46,13 +46,13 @@ export abstract class Instance
 
     public ClearAllChildren(): void
     {
-        for (let child of [...this._children])
+        for (let child of this.GetChildren())
         { child.Destroy(); }
     }
 
     public Destroy(): void
     {
-        for (let child of [...this._children])
+        for (let child of this.GetChildren())
         { child.Destroy(); }
         this._children = [];
 
@@ -79,4 +79,19 @@ export abstract class Instance
 
     public GetChildren(): Instance[]
     { return [...this._children]; }
+
+    public GetDescendants(): Instance[]
+    {
+        let output: Instance[] = [];
+
+        for (let child of this.GetChildren())
+        {
+            output.push(child);
+
+            for (let descendant of child.GetDescendants())
+            { output.push(descendant); }
+        }
+
+        return output;
+    }
 }

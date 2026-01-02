@@ -4,8 +4,8 @@ src/index.ts
 The entry point file of the project.
  */
 
+import { World, Camera, Cuboid } from "./Instance";
 import { Vector3 } from "./ZMath";
-import { Camera, Renderer } from "./Renderer";
 
 /**
  * The entry point of the project.
@@ -13,10 +13,15 @@ import { Camera, Renderer } from "./Renderer";
  * */
 function main(): void
 {
-    const cam: Camera = new Camera(Vector3.zero, Vector3.zero, 90);
-    const renderer: Renderer = new Renderer(cam, document.getElementById("canvas") as HTMLCanvasElement);
+    const world: World = new World();
+    world.Name = "World";
 
-    renderer.draw();
+    const camera = new Camera(document.getElementById("canvas") as HTMLCanvasElement);
+    camera.Parent = world;
+    camera.Name = "Camera";
+
+    const part1: Cuboid = new Cuboid(Vector3.one);
+    part1.Parent = world;
 }
 
 main();

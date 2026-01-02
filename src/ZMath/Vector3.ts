@@ -4,6 +4,8 @@ src/ZMath/Vector3.ts
 Defines a Vector3 class.
  */
 
+import {Vector2} from "./Vector2";
+
 /**
  * A class representing 3dimensional vector
  * */
@@ -78,4 +80,14 @@ export class Vector3
      */
     static dot(v1: Vector3, v2: Vector3): number
     { return v1.x * v2.x + v1.y * v2.y + v1.z * v2.z; }
+
+    static Hadamard(...vectors: Vector3[]): Vector3
+    {
+        let output: Vector3 = Vector3.one;
+
+        for (let vector of vectors)
+        { output = new Vector3(output.x * vector.x, output.y * vector.y, output.z * vector.z); }
+
+        return output;
+    }
 }
