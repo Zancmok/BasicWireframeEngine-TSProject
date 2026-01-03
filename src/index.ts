@@ -11,7 +11,9 @@ const keysPressed: { [key: string]: boolean } = {
     "w": false,
     "a": false,
     "s": false,
-    "d": false
+    "d": false,
+    " ": false,
+    "Shift": false
 };
 
 let mouseDeltaX: number = 0;
@@ -92,7 +94,7 @@ function loop(timeDelta: number): void {
     const speed: number = 0.05;
     const mouseSensitivity: number = 0.03;
 
-    // Vertical Movement
+    // Horizontal Movement
     camera.Position = Vector3.add(
         camera.Position,
         new Vector3(
@@ -112,12 +114,24 @@ function loop(timeDelta: number): void {
         )
     );
 
+    // Vertical Movement
+    camera.Position = Vector3.add(
+        camera.Position,
+        new Vector3(
+            0,
+            speed * ((+keysPressed[" "]) - (+keysPressed["Shift"])),
+            0
+        )
+    )
+
     // Camera Rotation
     camera.Rotation = new Vector3(
-        0,
+        Math.max(Math.min(camera.Rotation.x + mouseDeltaY * mouseSensitivity, 90), -90),
         camera.Rotation.y + mouseDeltaX * mouseSensitivity,
         0
     );
+
+    console.log(camera.Rotation, camera.Position);
 
     mouseDeltaX = 0;
     mouseDeltaY = 0;
@@ -158,8 +172,6 @@ function loop(timeDelta: number): void {
         part3.Position,
         new Vector3(0, timeDelta * cubeSpeed * 0.005 * movement, 0)
     )
-
-    console.log(part1.Position.y, lock);
 }
 
 main();

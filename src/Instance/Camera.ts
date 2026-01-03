@@ -7,8 +7,8 @@ import {Part} from "./Part";
 export class Camera extends POInstance
 {
     public FieldOfView: number = 90;
-    public canvas: HTMLCanvasElement;
-    public canvasContext: CanvasRenderingContext2D;
+    protected canvas: HTMLCanvasElement;
+    protected canvasContext: CanvasRenderingContext2D;
 
     public constructor(canvas: HTMLCanvasElement) {
         super();

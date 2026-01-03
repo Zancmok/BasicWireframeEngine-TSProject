@@ -90,16 +90,16 @@ export class Vector3
         let y = vector.y;
         let z = vector.z;
 
-        // Rotate around X
-        [y, z] = [
-            y * Math.cos(rotationX) - z * Math.sin(rotationX),
-            y * Math.sin(rotationX) + z * Math.cos(rotationX)
-        ];
-
         // Rotate around Y
         [x, z] = [
             x * Math.cos(rotationY) + z * Math.sin(rotationY),
             -x * Math.sin(rotationY) + z * Math.cos(rotationY)
+        ];
+
+        // Rotate around X
+        [y, z] = [
+            y * Math.cos(rotationX) - z * Math.sin(rotationX),
+            y * Math.sin(rotationX) + z * Math.cos(rotationX)
         ];
 
         // Rotate around Z
