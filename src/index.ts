@@ -8,12 +8,12 @@ import { World, Camera, Cuboid } from "./Instance";
 import { Vector3 } from "./ZMath";
 
 const keysPressed: { [key: string]: boolean } = {
-    "w": false,
-    "a": false,
-    "s": false,
-    "d": false,
-    " ": false,
-    "Shift": false
+    "ShiftLeft": false,
+    "Space": false,
+    "KeyW": false,
+    "KeyS": false,
+    "KeyD": false,
+    "KeyA": false
 };
 
 let mouseDeltaX: number = 0;
@@ -35,8 +35,14 @@ function main(): void
     world.Name = "World";
 
     const canvas: HTMLCanvasElement = document.getElementById("canvas") as HTMLCanvasElement;
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
+
+    camera = new Camera(canvas);
+    camera.Parent = world;
+    camera.Name = "Camera";
+
+    let presetFOV: number = Number(document.cookie.split(';').find(c => c.startsWith("FOV="))?.split("=")[1]);
+    if (!Number.isNaN(presetFOV))
+    { camera.FieldOfView = presetFOV; }
 
     // Controls magic here
     canvas.addEventListener("click", () => {
@@ -51,16 +57,29 @@ function main(): void
     });
 
     window.addEventListener("keydown", (e) => {
-        keysPressed[e.key] = true;
+        keysPressed[e.code] = true;
     });
 
     window.addEventListener("keyup", (e) => {
-        keysPressed[e.key] = false;
-    });
+        keysPressed[e.code] = false;
 
-    camera = new Camera(canvas);
-    camera.Parent = world;
-    camera.Name = "Camera";
+        if (e.code == "F8")
+        {
+            const result: string | null = prompt("New FOV: ");
+
+            if (result === null)
+            { return; }
+
+            const newFOV: number = +result;
+
+            if (Number.isNaN(newFOV))
+            { return; }
+
+            camera.FieldOfView = newFOV;
+
+            document.cookie = `FOV=${newFOV}`;
+        }
+    });
 
     part1 = new Cuboid(Vector3.one);
     part1.Parent = world;
@@ -82,11 +101,83 @@ function main(): void
 
         loop(timeDelta);
 
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        canvas.style.width = `${window.innerWidth}px`;
+        canvas.style.height = `${window.innerHeight}px`;
+
         camera.Render();
+
+        drawUI(canvas);
+
         requestAnimationFrame(gameLoop);
     }
 
     requestAnimationFrame(gameLoop);
+}
+
+function drawUI(canvas: HTMLCanvasElement): void
+{
+    const canvasContext: CanvasRenderingContext2D = canvas.getContext("2d") as CanvasRenderingContext2D;
+
+    canvasContext.font = "16px monospace";
+    canvasContext.fillStyle = "black";
+
+    canvasContext.textAlign = "left";
+    canvasContext.textBaseline = "bottom";
+
+    const elementPadding: number = 20;
+    let elementsPasted: number = 1;
+
+    canvasContext.fillText(
+        "Wireframe Renderer v1.0.0",
+        0,
+        canvas.height - elementPadding * elementsPasted
+    );
+    elementsPasted++;
+
+    canvasContext.fillText(
+        new Date().toString(),
+        0,
+        canvas.height - elementPadding * elementsPasted
+    );
+    elementsPasted++;
+
+    canvasContext.fillText(
+        "F8 - Change FOV Current FOV: ".concat(camera.FieldOfView.toString()),
+        0,
+        canvas.height - elementPadding * elementsPasted
+    );
+    elementsPasted++;
+
+    canvasContext.fillText(
+        "Mouse - Rotations",
+        0,
+        canvas.height - elementPadding * elementsPasted
+    );
+    elementsPasted++;
+
+    canvasContext.fillText(
+        "Space - upwards Shift - downwards",
+        0,
+        canvas.height - elementPadding * elementsPasted
+    );
+    elementsPasted++;
+
+    canvasContext.fillText(
+        "A - left D - right W - forward S - backwards",
+        0,
+        canvas.height - elementPadding * elementsPasted
+    );
+    elementsPasted++;
+
+    canvasContext.fillText(
+        "Controls:",
+        0,
+        canvas.height - elementPadding * elementsPasted
+    );
+    elementsPasted++;
 }
 
 let lock: boolean = false;
@@ -98,9 +189,9 @@ function loop(timeDelta: number): void {
     camera.Position = Vector3.add(
         camera.Position,
         new Vector3(
-            Math.sin(camera.Rotation.y * Math.PI / 180) * speed * ((+keysPressed["w"]) - (+keysPressed["s"])),
+            Math.sin(camera.Rotation.y * Math.PI / 180) * speed * ((+keysPressed["KeyW"]) - (+keysPressed["KeyS"])),
             0,
-            Math.cos(camera.Rotation.y * Math.PI / 180) * speed * ((+keysPressed["w"]) - (+keysPressed["s"]))
+            Math.cos(camera.Rotation.y * Math.PI / 180) * speed * ((+keysPressed["KeyW"]) - (+keysPressed["KeyS"]))
         )
     );
 
@@ -108,9 +199,9 @@ function loop(timeDelta: number): void {
     camera.Position = Vector3.add(
         camera.Position,
         new Vector3(
-            Math.cos(camera.Rotation.y * Math.PI / 180) * speed * ((+keysPressed["d"]) - (+keysPressed["a"])),
+            Math.cos(camera.Rotation.y * Math.PI / 180) * speed * ((+keysPressed["KeyD"]) - (+keysPressed["KeyA"])),
             0,
-            -Math.sin(camera.Rotation.y * Math.PI / 180) * speed * ((+keysPressed["d"]) - (+keysPressed["a"]))
+            -Math.sin(camera.Rotation.y * Math.PI / 180) * speed * ((+keysPressed["KeyD"]) - (+keysPressed["KeyA"]))
         )
     );
 
@@ -119,7 +210,7 @@ function loop(timeDelta: number): void {
         camera.Position,
         new Vector3(
             0,
-            speed * ((+keysPressed[" "]) - (+keysPressed["Shift"])),
+            speed * ((+keysPressed["Space"]) - (+keysPressed["ShiftLeft"])),
             0
         )
     )
@@ -131,8 +222,6 @@ function loop(timeDelta: number): void {
         0
     );
 
-    console.log(camera.Rotation, camera.Position);
-
     mouseDeltaX = 0;
     mouseDeltaY = 0;
 
@@ -141,15 +230,15 @@ function loop(timeDelta: number): void {
     part1.Rotation = Vector3.add(
         part1.Rotation,
         new Vector3(0, timeDelta * cubeSpeed, 0),
-    )
+    );
     part2.Rotation = Vector3.add(
         part2.Rotation,
         new Vector3(0, -timeDelta * cubeSpeed, 0),
-    )
+    );
     part3.Rotation = Vector3.add(
         part3.Rotation,
         new Vector3(0, -timeDelta * cubeSpeed, 0),
-    )
+    );
 
     let movement: number;
     if ((part1.Position.y >= 1 && lock) || (part1.Position.y <= -1 && !lock))
@@ -163,15 +252,15 @@ function loop(timeDelta: number): void {
     part1.Position = Vector3.add(
         part1.Position,
         new Vector3(0, timeDelta * cubeSpeed * 0.005 * movement, 0)
-    )
+    );
     part2.Position = Vector3.add(
         part2.Position,
         new Vector3(0, timeDelta * cubeSpeed * 0.005 * movement, 0)
-    )
+    );
     part3.Position = Vector3.add(
         part3.Position,
         new Vector3(0, timeDelta * cubeSpeed * 0.005 * movement, 0)
-    )
+    );
 }
 
 main();
