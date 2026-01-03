@@ -60,6 +60,7 @@ function main(): void
         keysPressed[e.code] = true;
     });
 
+    let formActive: boolean = false;
     window.addEventListener("keyup", (e) => {
         keysPressed[e.code] = false;
 
@@ -78,6 +79,72 @@ function main(): void
             camera.FieldOfView = newFOV;
 
             document.cookie = `FOV=${newFOV}`;
+        }
+        else if (e.code == "F4")
+        {
+            if (formActive)
+            {
+                let form: HTMLElement | null = document.getElementById("form");
+                if (form !== null)
+                { document.getElementById("body")?.removeChild(form); }
+
+                formActive = false;
+                return;
+            }
+
+            formActive = true;
+
+            let newForm: HTMLFormElement = document.createElement("form");
+            newForm.setAttribute("id", "form");
+            document.getElementById("body")?.appendChild(newForm);
+
+            let formTitle: HTMLParagraphElement = document.createElement("p");
+            formTitle.innerText = "Cube Factory";
+            newForm.appendChild(formTitle);
+
+            let positionXLabel: HTMLLabelElement = document.createElement("label");
+            positionXLabel.innerText = "PositionX: ";
+            newForm.appendChild(positionXLabel);
+
+            let positionInputX: HTMLInputElement = document.createElement("input");
+            positionInputX.type = "number";
+            newForm.appendChild(positionInputX);
+
+            let positionYLabel: HTMLLabelElement = document.createElement("label");
+            positionYLabel.innerText = "PositionY: ";
+            newForm.appendChild(positionYLabel);
+
+            let positionInputY: HTMLInputElement = document.createElement("input");
+            positionInputY.type = "number";
+            newForm.appendChild(positionInputY);
+
+            let positionZLabel: HTMLLabelElement = document.createElement("label");
+            positionZLabel.innerText = "PositionZ: ";
+            newForm.appendChild(positionZLabel);
+
+            let positionInputZ: HTMLInputElement = document.createElement("input");
+            positionInputZ.type = "number";
+            newForm.appendChild(positionInputZ);
+
+            let createButton: HTMLButtonElement = document.createElement("button");
+            createButton.type = "button";
+            createButton.innerText = "Create";
+            createButton.addEventListener("click", (e) => {
+                let x: number = Number(positionInputX.value);
+                let y: number = Number(positionInputY.value);
+                let z: number = Number(positionInputZ.value);
+
+                if (Number.isNaN(x) || Number.isNaN(y) || Number.isNaN(z))
+                {
+                    alert("Invalid position!");
+                    return;
+                }
+
+                let newCuboid: Cuboid = new Cuboid(Vector3.one);
+                newCuboid.Position = new Vector3(x, y, z)
+                newCuboid.Parent = world;
+            })
+            newForm.appendChild(createButton);
         }
     });
 
@@ -101,11 +168,17 @@ function main(): void
 
         loop(timeDelta);
 
-        canvas.width = window.innerWidth;
-        canvas.height = window.innerHeight;
+        let canvasWidth: number = window.innerWidth * 0.95;
+        let canvasHeight: number = window.innerHeight * 0.95;
 
-        canvas.style.width = `${window.innerWidth}px`;
-        canvas.style.height = `${window.innerHeight}px`;
+        if (formActive)
+        { canvasHeight -= 40 }
+
+        canvas.width = canvasWidth;
+        canvas.height = canvasHeight;
+
+        canvas.style.width = `${canvasWidth}px`;
+        canvas.style.height = `${canvasHeight}px`;
 
         camera.Render();
 
@@ -146,6 +219,13 @@ function drawUI(canvas: HTMLCanvasElement): void
 
     canvasContext.fillText(
         "F8 - Change FOV Current FOV: ".concat(camera.FieldOfView.toString()),
+        0,
+        canvas.height - elementPadding * elementsPasted
+    );
+    elementsPasted++;
+
+    canvasContext.fillText(
+        "F4 - Open/Close Cube Factory",
         0,
         canvas.height - elementPadding * elementsPasted
     );
@@ -260,6 +340,10 @@ function loop(timeDelta: number): void {
     part3.Position = Vector3.add(
         part3.Position,
         new Vector3(0, timeDelta * cubeSpeed * 0.005 * movement, 0)
+    );
+    part1.Size = Vector3.add(
+        part1.Size,
+        new Vector3(movement * cubeSpeed * 0.05, 0, movement * cubeSpeed * 0.05)
     );
 }
 
