@@ -87,6 +87,7 @@ function main(): void
     requestAnimationFrame(gameLoop);
 }
 
+let lock: boolean = false;
 function loop(timeDelta: number): void {
     const speed: number = 0.05;
     const mouseSensitivity: number = 0.03;
@@ -120,6 +121,45 @@ function loop(timeDelta: number): void {
 
     mouseDeltaX = 0;
     mouseDeltaY = 0;
+
+    const cubeSpeed = 0.2;
+
+    part1.Rotation = Vector3.add(
+        part1.Rotation,
+        new Vector3(0, timeDelta * cubeSpeed, 0),
+    )
+    part2.Rotation = Vector3.add(
+        part2.Rotation,
+        new Vector3(0, -timeDelta * cubeSpeed, 0),
+    )
+    part3.Rotation = Vector3.add(
+        part3.Rotation,
+        new Vector3(0, -timeDelta * cubeSpeed, 0),
+    )
+
+    let movement: number;
+    if ((part1.Position.y >= 1 && lock) || (part1.Position.y <= -1 && !lock))
+    { lock = !lock; }
+
+    if (lock)
+    { movement = 1; }
+    else
+    { movement = -1; }
+
+    part1.Position = Vector3.add(
+        part1.Position,
+        new Vector3(0, timeDelta * cubeSpeed * 0.005 * movement, 0)
+    )
+    part2.Position = Vector3.add(
+        part2.Position,
+        new Vector3(0, timeDelta * cubeSpeed * 0.005 * movement, 0)
+    )
+    part3.Position = Vector3.add(
+        part3.Position,
+        new Vector3(0, timeDelta * cubeSpeed * 0.005 * movement, 0)
+    )
+
+    console.log(part1.Position.y, lock);
 }
 
 main();
