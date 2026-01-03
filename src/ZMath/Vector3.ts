@@ -4,8 +4,6 @@ src/ZMath/Vector3.ts
 Defines a Vector3 class.
  */
 
-import {Vector2} from "./Vector2";
-
 /**
  * A class representing 3dimensional vector
  * */
@@ -81,13 +79,35 @@ export class Vector3
     static dot(v1: Vector3, v2: Vector3): number
     { return v1.x * v2.x + v1.y * v2.y + v1.z * v2.z; }
 
-    static Hadamard(...vectors: Vector3[]): Vector3
+    static rotateEuler(vector: Vector3, rotationVector: Vector3): Vector3
     {
-        let output: Vector3 = Vector3.one;
+        // Convert degrees to radians
+        const rotationX: number = rotationVector.x * Math.PI / 180;
+        const rotationY: number = rotationVector.y * Math.PI / 180;
+        const rotationZ: number = rotationVector.z * Math.PI / 180;
 
-        for (let vector of vectors)
-        { output = new Vector3(output.x * vector.x, output.y * vector.y, output.z * vector.z); }
+        let x = vector.x;
+        let y = vector.y;
+        let z = vector.z;
 
-        return output;
+        // Rotate around X
+        [y, z] = [
+            y * Math.cos(rotationX) - z * Math.sin(rotationX),
+            y * Math.sin(rotationX) + z * Math.cos(rotationX)
+        ];
+
+        // Rotate around Y
+        [x, z] = [
+            x * Math.cos(rotationY) + z * Math.sin(rotationY),
+            -x * Math.sin(rotationY) + z * Math.cos(rotationY)
+        ];
+
+        // Rotate around Z
+        [x, y] = [
+            x * Math.cos(rotationZ) - y * Math.sin(rotationZ),
+            x * Math.sin(rotationZ) + y * Math.cos(rotationZ)
+        ];
+
+        return new Vector3(x, y, z);
     }
 }

@@ -1,7 +1,7 @@
 import { POInstance } from "./POInstance";
 import {Instance} from "./Instance";
 import {World} from "./World";
-import {Vector3} from "../ZMath";
+import {Vector2, Vector3} from "../ZMath";
 import {Part} from "./Part";
 
 export class Camera extends POInstance
@@ -15,6 +15,34 @@ export class Camera extends POInstance
 
         this.canvas = canvas;
         this.canvasContext = canvas.getContext("2d") as CanvasRenderingContext2D;
+
+        this.canvasContext.fillStyle = "black";
+    }
+
+    private projectPoint(point: Vector3): Vector2
+    {
+        return new Vector2(
+            this.canvas.width / 2 + this.FieldOfView * point.x / point.z,
+            this.canvas.height / 2 - this.FieldOfView * point.y / point.z
+        );
+    }
+
+    private drawLine(start: Vector3, end: Vector3): void
+    {
+        start = Vector3.rotateEuler(Vector3.sub(start, this.Position), Vector3.mul(this.Rotation, -1));
+        end = Vector3.rotateEuler(Vector3.sub(end, this.Position), Vector3.mul(this.Rotation, -1));
+
+        // If behind the camera
+        if (start.z <= 0 || end.z <= 0)
+        { return; }
+
+        let projectedStart: Vector2 = this.projectPoint(start);
+        let projectedEnd: Vector2 = this.projectPoint(end);
+
+        this.canvasContext.beginPath();
+        this.canvasContext.moveTo(Math.round(projectedStart.x) + 0.5, Math.round(projectedStart.y) + 0.5);
+        this.canvasContext.lineTo(Math.round(projectedEnd.x) + 0.5, Math.round(projectedEnd.y) + 0.5);
+        this.canvasContext.stroke();
     }
 
     public Render(): void
@@ -38,7 +66,9 @@ export class Camera extends POInstance
             if (!(instance instanceof Part))
             { continue; }
 
-
+            // Draw the individual line
+            for (let line of instance.GetLines())
+            { this.drawLine(line[0], line[1]); }
         }
     }
 }
